@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';
 import { api } from '../services/api';
 import { ChatMessage as ChatMessageType } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Send,
   Bot,
@@ -76,12 +77,31 @@ const getSuggestedFollowups = (language: string) => {
 };
 
 export const ChatbotPage: React.FC = () => {
+<<<<<<< HEAD
   const [language, setLanguage] = useState('en');
+=======
+  const { language, t } = useLanguage();
+
+  const getInitialWelcome = (lang: string) => {
+    if (lang === 'hi') {
+      return "à¤¨à¤®à¤¸à¥à¤¤à¥‡! ðŸ™ à¤®à¥ˆà¤‚ **à¤•à¥ƒà¤·à¤¿ à¤®à¤¿à¤¤à¥à¤° à¤à¤†à¤ˆ** à¤¹à¥‚à¤, à¤†à¤ªà¤•à¤¾ à¤µà¤°à¤¿à¤·à¥à¤  à¤•à¥ƒà¤·à¤¿ à¤¸à¤²à¤¾à¤¹à¤•à¤¾à¤°à¥¤\n\nà¤†à¤œ à¤†à¤ªà¤•à¥€ à¤«à¤¸à¤² à¤¯à¤¾ à¤–à¥‡à¤¤à¥€ à¤®à¥‡à¤‚ à¤•à¥à¤¯à¤¾ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¤° à¤¸à¤•à¤¤à¤¾ à¤¹à¥‚à¤? à¤†à¤ª à¤–à¤¾à¤¦ (NPK), à¤¬à¥€à¤®à¤¾à¤°à¥€ à¤¨à¤¿à¤µà¤¾à¤°à¤£, à¤®à¥Œà¤¸à¤® à¤¯à¤¾ à¤«à¤¸à¤² à¤šà¤¯à¤¨ à¤•à¥‡ à¤¬à¤¾à¤°à¥‡ à¤®à¥‡à¤‚ à¤ªà¥‚à¤› à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤";
+    }
+    if (lang === 'mr') {
+      return "à¤¨à¤®à¤¸à¥à¤•à¤¾à¤°! ðŸ™ à¤®à¥€ **à¤•à¥ƒà¤·à¥€à¤®à¤¿à¤¤à¥à¤° à¤à¤†à¤¯** à¤†à¤¹à¥‡, à¤¤à¥à¤®à¤šà¤¾ à¤¶à¥‡à¤¤à¥€ à¤¸à¤²à¥à¤²à¤¾à¤—à¤¾à¤°à¥¤\n\nà¤†à¤œ à¤®à¥€ à¤¤à¥à¤®à¥à¤¹à¤¾à¤²à¤¾ à¤•à¤¶à¤¾à¤¤ à¤®à¤¦à¤¤ à¤•à¤°à¥‚ à¤¶à¤•à¤¤à¥‹? à¤¤à¥à¤®à¥à¤¹à¥€ à¤–à¤¤à¥‡, à¤ªà¤¿à¤•à¤¾à¤‚à¤µà¤°à¥€à¤² à¤°à¥‹à¤—, à¤¹à¤µà¤¾à¤®à¤¾à¤¨ à¤•à¤¿à¤‚à¤µà¤¾ à¤¯à¥‹à¤—à¥à¤¯ à¤ªà¤¿à¤•à¤¾à¤šà¥€ à¤¨à¤¿à¤µà¤¡ à¤¯à¤¾à¤¬à¤¦à¥à¤¦à¤² à¤µà¤¿à¤šà¤¾à¤°à¥‚ à¤¶à¤•à¤¤à¤¾.";
+    }
+    return "Namaste! ðŸ™ I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.";
+  };
+
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
   const [messages, setMessages] = useState<ChatMessageType[]>([
     {
       id: 'init_1',
       sender: 'assistant',
+<<<<<<< HEAD
       content: getWelcomeMessage('en'),
+=======
+      content: getInitialWelcome(language),
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
       category: 'General',
       timestamp: new Date().toISOString()
     }
@@ -98,6 +118,7 @@ export const ChatbotPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
+<<<<<<< HEAD
   useEffect(() => {
     setMessages((prev) => {
       if (prev.length === 0) {
@@ -117,6 +138,21 @@ export const ChatbotPage: React.FC = () => {
         return msg;
       });
     });
+=======
+  // Update welcome message if user changes language and hasn't started chatting
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].id === 'init_1') {
+      setMessages([
+        {
+          id: 'init_1',
+          sender: 'assistant',
+          content: getInitialWelcome(language),
+          category: 'General',
+          timestamp: new Date().toISOString()
+        }
+      ]);
+    }
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
   }, [language]);
 
   const handleSend = async (overridePrompt?: string) => {
@@ -140,7 +176,11 @@ export const ChatbotPage: React.FC = () => {
         message: textToSend,
         category,
         use_rag: useRag,
+<<<<<<< HEAD
         language
+=======
+        language: language
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
       });
 
       const rawMessage = res?.data?.message;
@@ -156,6 +196,7 @@ export const ChatbotPage: React.FC = () => {
 
       setMessages((prev) => [...prev, asstMsg]);
     } catch (err) {
+<<<<<<< HEAD
       console.error('Chat error', err);
       setMessages((prev) => [...prev, {
         id: `asst_err_${Date.now()}`,
@@ -177,6 +218,20 @@ export const ChatbotPage: React.FC = () => {
           : language === 'mr'
             ? '### 🌿 शेती सल्ला\n\nपिकाची उपज चांगली मिळण्यासाठी मातीच्या चाचणीनुसार संतुलित NPK लागू करा.\n\n- बेसल ड्रेसिंगमध्ये 50% नत्र द्या\n- उर्वरित 50% दोन भागात द्या\n- कीटकांपासून बचावासाठी सेंद्रिय उपाय वापरा'
             : '### 🌿 Agronomy Advisory Response\n\nFor optimal crop yield, ensure balanced NPK fertilizer application based on your soil health card. Apply 50% Nitrogen during basal dressing and the remainder in 2 split top dressings after irrigation.',
+=======
+      console.error("Chat error", err);
+      let fallbackText = "### Unable to get an answer\n\nThe chatbot service could not be reached. No farming advice was generated, so please try again shortly.";
+      if (language === 'hi') {
+        fallbackText = "### Answer unavailable\n\nThe chatbot service could not be reached. Please try again shortly.";
+      } else if (language === 'mr') {
+        fallbackText = "### Answer unavailable\n\nThe chatbot service could not be reached. Please try again shortly.";
+      }
+
+      const fallbackMsg: ChatMessageType = {
+        id: `asst_err_${Date.now()}`,
+        sender: 'assistant',
+        content: fallbackText,
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
         category,
         timestamp: new Date().toISOString()
       };
@@ -189,9 +244,14 @@ export const ChatbotPage: React.FC = () => {
   const toggleRecording = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
-      // Simulate Voice STT transcription
       setTimeout(() => {
-        setInput("What is the organic treatment for tomato leaf early blight disease?");
+        if (language === 'hi') {
+          setInput("à¤Ÿà¤®à¤¾à¤Ÿà¤° à¤•à¥‡ à¤ªà¤¤à¥à¤¤à¥‹à¤‚ à¤®à¥‡à¤‚ à¤ªà¥€à¤²à¥‡ à¤§à¤¬à¥à¤¬à¥‹à¤‚ à¤•à¤¾ à¤œà¥ˆà¤µà¤¿à¤• à¤‰à¤ªà¤šà¤¾à¤° à¤•à¥à¤¯à¤¾ à¤¹à¥ˆ?");
+        } else if (language === 'mr') {
+          setInput("à¤Ÿà¥‹à¤®à¥…à¤Ÿà¥‹à¤šà¥à¤¯à¤¾ à¤ªà¤¾à¤¨à¤¾à¤‚à¤µà¤°à¥€à¤² à¤ªà¤¿à¤µà¤³à¥à¤¯à¤¾ à¤ à¤¿à¤ªà¤•à¥à¤¯à¤¾à¤‚à¤µà¤° à¤¸à¥‡à¤‚à¤¦à¥à¤°à¤¿à¤¯ à¤‰à¤ªà¤¾à¤¯ à¤•à¤¾à¤¯ à¤†à¤¹à¥‡?");
+        } else {
+          setInput("What is the simple treatment for leaf spots on tomatoes?");
+        }
         setIsRecording(false);
       }, 3000);
     }
@@ -215,12 +275,12 @@ export const ChatbotPage: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              AI Agriculture Advisor
-              <span className="text-xs px-2 py-0.5 bg-agri-500/20 text-agri-300 rounded-full border border-agri-500/30">
-                Gemini 1.5 Powered
+              {t('chatbot_title')}
+              <span className="text-xs px-2 py-0.5 bg-agri-500/20 text-agri-300 rounded-full border border-agri-500/30 font-medium">
+                Simple Multi-Language AI
               </span>
             </h2>
-            <p className="text-xs text-slate-400">Ask questions in English, Hindi, or Regional agricultural terms</p>
+            <p className="text-xs text-slate-400">{t('chatbot_subtitle')}</p>
           </div>
         </div>
 
@@ -251,6 +311,7 @@ export const ChatbotPage: React.FC = () => {
           </button>
 
           <button
+<<<<<<< HEAD
             onClick={() => setMessages([messages[0] || {
               id: 'init_1',
               sender: 'assistant',
@@ -259,6 +320,10 @@ export const ChatbotPage: React.FC = () => {
               timestamp: new Date().toISOString()
             }])}
             title="Clear Chat History"
+=======
+            onClick={() => setMessages([messages[0]])}
+            title={t('clear_chat')}
+>>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
             className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-white/5"
           >
             <Trash2 className="w-4 h-4" />
@@ -279,6 +344,24 @@ export const ChatbotPage: React.FC = () => {
             }`}
           >
             {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Quick Action Sample Question Pills */}
+      <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <span className="text-[11px] font-bold text-agri-400 whitespace-nowrap px-1">âš¡ {t('suggested_questions')}</span>
+        {[
+          language === 'hi' ? "à¤—à¥‡à¤¹à¥‚à¤‚ à¤®à¥‡à¤‚ à¤–à¤¾à¤¦ (NPK) à¤•à¥€ à¤¸à¤¹à¥€ à¤®à¤¾à¤¤à¥à¤°à¤¾" : language === 'mr' ? "à¤—à¤µà¥à¤¹à¤¾à¤¸à¤¾à¤ à¥€ à¤–à¤¤à¤¾à¤‚à¤šà¥‡ à¤ªà¥à¤°à¤®à¤¾à¤£" : "Wheat NPK Dose per Acre",
+          language === 'hi' ? "à¤Ÿà¤®à¤¾à¤Ÿà¤° à¤•à¥‡ à¤ªà¤¤à¥à¤¤à¥‹à¤‚ à¤®à¥‡à¤‚ à¤ªà¥€à¤²à¥‡ à¤§à¤¬à¥à¤¬à¥‹à¤‚ à¤•à¤¾ à¤‡à¤²à¤¾à¤œ" : language === 'mr' ? "à¤Ÿà¥‹à¤®à¥…à¤Ÿà¥‹ à¤ªà¤¿à¤•à¤¾à¤¤à¥€à¤² à¤°à¥‹à¤— à¤‰à¤ªà¤¾à¤¯" : "Tomato Leaf Yellow Spot Cure",
+          language === 'hi' ? "à¤œà¥ˆà¤µà¤¿à¤• à¤•à¥€à¤Ÿà¤¨à¤¾à¤¶à¤• (à¤¨à¥€à¤® à¤¤à¥‡à¤²) à¤‰à¤ªà¤¯à¥‹à¤—" : language === 'mr' ? "à¤¸à¥‡à¤‚à¤¦à¥à¤°à¤¿à¤¯ à¤•à¥€à¤Ÿà¤•à¤¨à¤¾à¤¶à¤• à¤¸à¤²à¥à¤²à¤¾" : "Organic Neem Oil Pest Spray",
+        ].map((q, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSend(q)}
+            className="px-2.5 py-1 rounded-lg bg-agri-950/60 text-agri-200 border border-agri-500/30 hover:bg-agri-500 hover:text-white transition-all whitespace-nowrap"
+          >
+            {q}
           </button>
         ))}
       </div>
@@ -311,7 +394,7 @@ export const ChatbotPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-semibold text-agri-300 uppercase tracking-wider">
-                  {msg.sender === 'user' ? 'You' : 'KrishiMitra AI'} • {msg.category || 'General'}
+                  {msg.sender === 'user' ? 'You' : 'KrishiMitra AI'} â€¢ {msg.category || 'General'}
                 </span>
                 {msg.sender === 'assistant' && (
                   <button
@@ -348,7 +431,13 @@ export const ChatbotPage: React.FC = () => {
         {loading && (
           <div className="flex items-center space-x-3 text-agri-400 text-sm font-medium animate-pulse">
             <RefreshCw className="w-5 h-5 animate-spin" />
-            <span>Analyzing soil & agronomy database...</span>
+            <span>
+              {language === 'hi'
+                ? 'à¤•à¥ƒà¤·à¤¿ à¤‰à¤¤à¥à¤¤à¤° à¤¤à¥ˆà¤¯à¤¾à¤° à¤•à¤¿à¤¯à¤¾ à¤œà¤¾ à¤°à¤¹à¤¾ à¤¹à¥ˆ...'
+                : language === 'mr'
+                ? 'à¤¶à¥‡à¤¤à¥€à¤µà¤¿à¤·à¤¯à¤• à¤‰à¤¤à¥à¤¤à¤° à¤¤à¤¯à¤¾à¤° à¤•à¥‡à¤²à¥‡ à¤œà¤¾à¤¤ à¤†à¤¹à¥‡...'
+                : 'Preparing simple farming advice...'}
+            </span>
           </div>
         )}
 
@@ -364,7 +453,7 @@ export const ChatbotPage: React.FC = () => {
               ? 'bg-red-500 text-white animate-bounce shadow-lg shadow-red-500/40'
               : 'bg-darkbg-900/60 text-slate-400 hover:text-white border border-white/10'
           }`}
-          title={isRecording ? 'Listening...' : 'Voice Input (Speech-to-Text)'}
+          title={isRecording ? t('listening') : t('record_voice')}
         >
           {isRecording ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
         </button>
@@ -374,7 +463,7 @@ export const ChatbotPage: React.FC = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={isRecording ? "Listening to your voice..." : "Ask KrishiMitra AI about crop selection, fertilizer doses, disease remedies..."}
+          placeholder={isRecording ? t('listening') : t('type_message_placeholder')}
           className="flex-1 bg-transparent border-none text-sm text-white focus:outline-none placeholder-slate-500 px-2"
         />
 
@@ -383,10 +472,12 @@ export const ChatbotPage: React.FC = () => {
           disabled={!input.trim() || loading}
           className="px-5 py-3 rounded-xl bg-gradient-to-r from-agri-500 to-emerald-500 hover:from-agri-400 hover:to-emerald-400 disabled:opacity-50 text-white font-bold shadow-lg shadow-agri-500/20 flex items-center space-x-2 transition-all"
         >
-          <span>Send</span>
+          <span>{t('send')}</span>
           <Send className="w-4 h-4" />
         </button>
       </GlassCard>
     </div>
   );
 };
+
+

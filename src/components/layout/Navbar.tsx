@@ -1,10 +1,12 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Sprout, Bell, User, LogOut, Search, CloudSun } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
+import { LanguageSelector } from '../ui/LanguageSelector';
+import { Sprout, Bell, LogOut, Search, CloudSun } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-darkbg-800/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between">
@@ -18,24 +20,27 @@ export const Navbar: React.FC = () => {
             KrishiMitra AI
           </span>
           <span className="hidden md:inline-block ml-2 text-xs font-semibold px-2 py-0.5 bg-agri-500/20 text-agri-300 rounded-md border border-agri-500/30">
-            v1.0 Multimodal
+            {t('app_subtitle')}
           </span>
         </div>
       </div>
 
       {/* Global Search Bar */}
-      <div className="hidden md:flex items-center w-80 glass-input rounded-xl px-3 py-1.5 space-x-2">
+      <div className="hidden md:flex items-center w-72 glass-input rounded-xl px-3 py-1.5 space-x-2">
         <Search className="w-4 h-4 text-slate-400" />
         <input
           type="text"
-          placeholder="Ask AI or search crops, schemes..."
+          placeholder={t('ask_search_placeholder')}
           className="bg-transparent border-none text-sm text-slate-200 focus:outline-none w-full placeholder-slate-500"
         />
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center space-x-4">
-        <div className="hidden sm:flex items-center space-x-2 bg-slate-800/50 px-3 py-1.5 rounded-xl border border-white/5">
+      <div className="flex items-center space-x-3">
+        {/* Language Switcher */}
+        <LanguageSelector />
+
+        <div className="hidden sm:flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-xl border border-white/5">
           <CloudSun className="w-4 h-4 text-amber-400" />
           <span className="text-xs font-medium text-slate-300">Pune: 29°C</span>
         </div>
@@ -57,7 +62,7 @@ export const Navbar: React.FC = () => {
           </div>
           <button
             onClick={logout}
-            title="Logout"
+            title={t('logout')}
             className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="w-4 h-4" />

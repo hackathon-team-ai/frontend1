@@ -13,23 +13,25 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'AI Agriculture Chatbot', path: '/chat', icon: Bot },
-    { name: 'Knowledge Base (RAG)', path: '/rag', icon: FileText },
-    { name: 'Leaf Disease Scan', path: '/disease', icon: ScanSearch },
-    { name: 'Crop Advisor Engine', path: '/crop-advisor', icon: Sprout },
-    { name: 'Weather Forecast', path: '/weather', icon: CloudSun },
-    { name: 'Government Schemes', path: '/schemes', icon: Landmark },
-    { name: 'Smart Farming Calendar', path: '/calendar', icon: CalendarCheck },
+    { name: t('dashboard'), path: '/', icon: LayoutDashboard },
+    { name: t('ai_advisor'), path: '/chat', icon: Bot },
+    { name: t('knowledge_base'), path: '/rag', icon: FileText },
+    { name: t('disease_scan'), path: '/disease', icon: ScanSearch },
+    { name: t('crop_advisor'), path: '/crop-advisor', icon: Sprout },
+    { name: t('weather'), path: '/weather', icon: CloudSun },
+    { name: t('schemes'), path: '/schemes', icon: Landmark },
+    { name: t('calendar'), path: '/calendar', icon: CalendarCheck },
   ];
 
   if (user?.role === 'admin') {
-    navItems.push({ name: 'Admin Control Panel', path: '/admin', icon: ShieldCheck });
+    navItems.push({ name: t('admin_panel'), path: '/admin', icon: ShieldCheck });
   }
 
   return (
