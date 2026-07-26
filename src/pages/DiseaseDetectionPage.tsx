@@ -20,6 +20,7 @@ export const DiseaseDetectionPage: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [report, setReport] = useState<DiseaseReport | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,12 +28,14 @@ export const DiseaseDetectionPage: React.FC = () => {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
       setReport(null);
+      setError(null);
     }
   };
 
   const handleAnalyze = async () => {
     if (!selectedFile) return;
     setLoading(true);
+    setError(null);
 
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -44,41 +47,7 @@ export const DiseaseDetectionPage: React.FC = () => {
       setReport(res.data);
     } catch (err) {
       console.error("Disease scan failed", err);
-      // Fallback Diagnosis Report for immediate testing
-      setReport({
-        id: 'r_demo',
-        user_id: 'demo_user',
-        image_url: previewUrl || '',
-        analysis: {
-          disease_name: "Tomato Early Blight (Alternaria solani)",
-          is_healthy: false,
-          crop_type: "Tomato",
-          confidence: 95.4,
-          symptoms: [
-            "Concentric dark brown rings on mature lower leaves.",
-            "Yellow halo surrounding foliar necrotic lesions.",
-            "Premature leaf drop starting from lower canopy."
-          ],
-          treatment: {
-            chemical: [
-              "Spray Mancozeb 75% WP @ 2g/Liter water",
-              "Spray Copper Oxychloride 50% WP @ 3g/Liter water"
-            ],
-            organic: [
-              "Foliar spray of Neem Seed Kernel Extract (5%)",
-              "Apply Trichoderma viride bio-fungicide @ 5g/Liter"
-            ],
-            dosage: "Apply every 7-10 days upon first symptom appearance."
-          },
-          prevention: [
-            "Maintain 2-foot row spacing to ensure adequate leaf aeration.",
-            "Avoid overhead sprinkler irrigation to keep foliage dry.",
-            "Rotate crops with non-solanaceous species like Maize or Beans."
-          ],
-          urgency_level: "High"
-        },
-        created_at: new Date().toISOString()
-      });
+      setError('Analysis could not be completed. Ensure the backend is running and a valid Gemini API key is configured.');
     } finally {
       setLoading(false);
     }
@@ -232,6 +201,12 @@ export const DiseaseDetectionPage: React.FC = () => {
                   ))}
                 </ul>
               </div>
+            </GlassCard>
+          ) : error ? (
+            <GlassCard className="h-full flex flex-col items-center justify-center p-12 text-center text-slate-400">
+              <AlertTriangle className="w-16 h-16 mb-3 text-amber-400" />
+              <p className="text-sm font-semibold text-slate-200">Analysis unavailable</p>
+              <p className="text-xs max-w-sm mt-1">{error}</p>
             </GlassCard>
           ) : (
             <GlassCard className="h-full flex flex-col items-center justify-center p-12 text-center text-slate-500">

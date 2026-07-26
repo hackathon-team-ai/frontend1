@@ -29,12 +29,59 @@ const CATEGORIES = [
   'Organic Farming'
 ];
 
+const LANGUAGES = [
+  { value: 'en', label: 'English' },
+  { value: 'hi', label: 'हिन्दी' },
+  { value: 'mr', label: 'मराठी' }
+];
+
+const getWelcomeMessage = (language: string) => {
+  if (language === 'mr') {
+    return 'नमस्कार! 🙏 मी **KrishiMitra AI**, तुमचा शेती सल्लागार आहे. तुम्ही खत, पिकांचे रोग, सिंचन, पीक निवड किंवा सेंद्रिय शेतीबद्दल मराठीत प्रश्न विचारू शकता.';
+  }
+  if (language === 'hi') {
+    return 'नमस्ते! 🙏 मैं **KrishiMitra AI**, आपका कृषि सलाहकार हूँ। आप उर्वरक, फसल रोग, सिंचाई, फसल चयन या जैविक खेती के बारे में हिंदी में पूछ सकते हैं।';
+  }
+  switch (language) {
+    case 'hi':
+      return 'नमस्ते! 🙏 मैं **KrishiMitra AI** हूँ, आपका Senior Agronomist और Multimodal Agriculture Advisor।\n\nआज आपकी खेती में मैं किस तरह मदद कर सकता हूँ? आप NPK उर्वरक, पत्ती रोग, फसल चयन, जैविक खेती या **RAG Mode** के बारे में पूछ सकते हैं.';
+    case 'mr':
+      return 'नमस्कार! 🙏 मी **KrishiMitra AI**, तुमचा Senior Agronomist आणि Multimodal Agriculture Advisor आहे.\n\nआज तुमच्या शेतात मी तुम्हाला कशा मदत करू शकतो? तुम्ही NPK खत, पानांचे रोग, पीक निवड, सेंद्रिय शेती किंवा **RAG Mode** विषयी चौकशी करू शकता.';
+    default:
+      return 'Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.';
+  }
+};
+
+const getSuggestedFollowups = (language: string) => {
+  switch (language) {
+    case 'hi':
+      return [
+        'इस फसल के लिए सबसे अच्छा NPK उर्वरक अनुपात क्या है?',
+        'मैं जैविक तरीके से कीटों से कैसे बचूँ?',
+        'कटाई के लिए सबसे अच्छा मौसम क्या है?'
+      ];
+    case 'mr':
+      return [
+        'या पिकासाठी सर्वोत्तम NPK खत प्रमाण काय आहे?',
+        'मी सेंद्रिय पद्धतीने कीटकांपासून कसे बचू?',
+        'कात्रीसाठी सर्वोत्तम हवामान काय आहे?'
+      ];
+    default:
+      return [
+        'What is the recommended NPK fertilizer dosage for this crop?',
+        'How can I prevent pest attacks organically?',
+        'What weather conditions are best for harvesting?'
+      ];
+  }
+};
+
 export const ChatbotPage: React.FC = () => {
+  const [language, setLanguage] = useState('en');
   const [messages, setMessages] = useState<ChatMessageType[]>([
     {
       id: 'init_1',
       sender: 'assistant',
-      content: "Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.",
+      content: getWelcomeMessage('en'),
       category: 'General',
       timestamp: new Date().toISOString()
     }
@@ -51,9 +98,30 @@ export const ChatbotPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 0) {
+        return [{
+          id: 'init_1',
+          sender: 'assistant',
+          content: getWelcomeMessage(language),
+          category: 'General',
+          timestamp: new Date().toISOString()
+        }];
+      }
+
+      return prev.map((msg, index) => {
+        if (index === 0 && msg.id === 'init_1') {
+          return { ...msg, content: getWelcomeMessage(language) };
+        }
+        return msg;
+      });
+    });
+  }, [language]);
+
   const handleSend = async (overridePrompt?: string) => {
-    const textToSend = overridePrompt || input;
-    if (!textToSend.trim() || loading) return;
+    const textToSend = (overridePrompt || input).trim();
+    if (!textToSend || loading) return;
 
     const userMsg: ChatMessageType = {
       id: `user_${Date.now()}`,
@@ -72,17 +140,43 @@ export const ChatbotPage: React.FC = () => {
         message: textToSend,
         category,
         use_rag: useRag,
-        language: 'en'
+        language
       });
 
-      const asstMsg: ChatMessageType = res.data.message;
+      const rawMessage = res?.data?.message;
+      const asstMsg: ChatMessageType = {
+        id: rawMessage?.id || `asst_${Date.now()}`,
+        sender: rawMessage?.sender || 'assistant',
+        content: rawMessage?.content || 'I could not generate a response right now.',
+        category: rawMessage?.category || category,
+        audio_url: rawMessage?.audio_url,
+        sources: rawMessage?.sources || [],
+        timestamp: rawMessage?.timestamp || new Date().toISOString()
+      };
+
       setMessages((prev) => [...prev, asstMsg]);
     } catch (err) {
-      console.error("Chat error", err);
+      console.error('Chat error', err);
+      setMessages((prev) => [...prev, {
+        id: `asst_err_${Date.now()}`,
+        sender: 'assistant',
+        content: language === 'mr'
+          ? `तुमच्या प्रश्नाचे उत्तर मिळाले नाही: **${textToSend}**. Backend/Gemini connection तपासा आणि पुन्हा प्रयत्न करा.`
+          : language === 'hi'
+            ? `आपके प्रश्न का उत्तर नहीं मिल सका: **${textToSend}**। Backend/Gemini connection जाँचकर फिर प्रयास करें।`
+            : `I could not answer your question: **${textToSend}**. Please check the backend/Gemini connection and try again.`,
+        category,
+        timestamp: new Date().toISOString()
+      }]);
+      return;
       const fallbackMsg: ChatMessageType = {
         id: `asst_err_${Date.now()}`,
         sender: 'assistant',
-        content: "### 🌿 Agronomy Advisory Response\n\nFor optimal crop yield, ensure balanced NPK fertilizer application based on your soil health card. Apply 50% Nitrogen during basal dressing and the remainder in 2 split top dressings after irrigation.",
+        content: language === 'hi'
+          ? '### 🌿 कृषि सलाह\n\nफसल की उपज के लिए मिट्टी की जांच के आधार पर संतुलित NPK अनुप्रयोग करें।\n\n- बेसल ड्रेसिंग में 50% नाइट्रोजन दें\n- बाकी 50% दो बार में सप्लीमेंट करें\n- कीटों से बचाव के लिए जैविक उपाय अपनाएँ'
+          : language === 'mr'
+            ? '### 🌿 शेती सल्ला\n\nपिकाची उपज चांगली मिळण्यासाठी मातीच्या चाचणीनुसार संतुलित NPK लागू करा.\n\n- बेसल ड्रेसिंगमध्ये 50% नत्र द्या\n- उर्वरित 50% दोन भागात द्या\n- कीटकांपासून बचावासाठी सेंद्रिय उपाय वापरा'
+            : '### 🌿 Agronomy Advisory Response\n\nFor optimal crop yield, ensure balanced NPK fertilizer application based on your soil health card. Apply 50% Nitrogen during basal dressing and the remainder in 2 split top dressings after irrigation.',
         category,
         timestamp: new Date().toISOString()
       };
@@ -132,6 +226,18 @@ export const ChatbotPage: React.FC = () => {
 
         {/* Category & RAG Toggle */}
         <div className="flex items-center space-x-3">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="bg-darkbg-900/60 border border-white/10 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang.value === 'mr' ? 'मराठी' : lang.value === 'hi' ? 'हिंदी' : 'English'}
+              </option>
+            ))}
+          </select>
+
           <button
             onClick={() => setUseRag(!useRag)}
             className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
@@ -141,11 +247,17 @@ export const ChatbotPage: React.FC = () => {
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>RAG Document Mode: {useRag ? 'ON' : 'OFF'}</span>
+            <span>{language === 'hi' ? 'RAG दस्तावेज मोड:' : language === 'mr' ? 'RAG दस्तऐवज मोड:' : 'RAG Document Mode:'} {useRag ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
-            onClick={() => setMessages([messages[0]])}
+            onClick={() => setMessages([messages[0] || {
+              id: 'init_1',
+              sender: 'assistant',
+              content: 'Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.',
+              category: 'General',
+              timestamp: new Date().toISOString()
+            }])}
             title="Clear Chat History"
             className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-white/5"
           >
