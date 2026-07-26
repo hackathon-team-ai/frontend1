@@ -51,12 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token]);
 
   const login = async (email: string, password: string) => {
-    const formData = new FormData();
-    formData.append('username', email);
-    formData.append('password', password);
+    const params = new URLSearchParams();
+    params.append('username', email);
+    params.append('password', password);
 
-    const res = await api.post('/auth/login', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const res = await api.post('/auth/login', params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
     const { access_token, user: userData } = res.data;
