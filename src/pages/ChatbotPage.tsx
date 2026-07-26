@@ -1,6 +1,5 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
-import { Badge } from '../components/ui/Badge';
 import { api } from '../services/api';
 import { ChatMessage as ChatMessageType } from '../types';
 import { useLanguage } from '../context/LanguageContext';
@@ -12,10 +11,8 @@ import {
   MicOff,
   Volume2,
   FileText,
-  Sparkles,
   RefreshCw,
-  Trash2,
-  CheckCircle2
+  Trash2
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -30,78 +27,16 @@ const CATEGORIES = [
   'Organic Farming'
 ];
 
-const LANGUAGES = [
-  { value: 'en', label: 'English' },
-  { value: 'hi', label: 'हिन्दी' },
-  { value: 'mr', label: 'मराठी' }
-];
-
-const getWelcomeMessage = (language: string) => {
-  if (language === 'mr') {
-    return 'नमस्कार! 🙏 मी **KrishiMitra AI**, तुमचा शेती सल्लागार आहे. तुम्ही खत, पिकांचे रोग, सिंचन, पीक निवड किंवा सेंद्रिय शेतीबद्दल मराठीत प्रश्न विचारू शकता.';
-  }
-  if (language === 'hi') {
-    return 'नमस्ते! 🙏 मैं **KrishiMitra AI**, आपका कृषि सलाहकार हूँ। आप उर्वरक, फसल रोग, सिंचाई, फसल चयन या जैविक खेती के बारे में हिंदी में पूछ सकते हैं।';
-  }
-  switch (language) {
-    case 'hi':
-      return 'नमस्ते! 🙏 मैं **KrishiMitra AI** हूँ, आपका Senior Agronomist और Multimodal Agriculture Advisor।\n\nआज आपकी खेती में मैं किस तरह मदद कर सकता हूँ? आप NPK उर्वरक, पत्ती रोग, फसल चयन, जैविक खेती या **RAG Mode** के बारे में पूछ सकते हैं.';
-    case 'mr':
-      return 'नमस्कार! 🙏 मी **KrishiMitra AI**, तुमचा Senior Agronomist आणि Multimodal Agriculture Advisor आहे.\n\nआज तुमच्या शेतात मी तुम्हाला कशा मदत करू शकतो? तुम्ही NPK खत, पानांचे रोग, पीक निवड, सेंद्रिय शेती किंवा **RAG Mode** विषयी चौकशी करू शकता.';
-    default:
-      return 'Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.';
-  }
-};
-
-const getSuggestedFollowups = (language: string) => {
-  switch (language) {
-    case 'hi':
-      return [
-        'इस फसल के लिए सबसे अच्छा NPK उर्वरक अनुपात क्या है?',
-        'मैं जैविक तरीके से कीटों से कैसे बचूँ?',
-        'कटाई के लिए सबसे अच्छा मौसम क्या है?'
-      ];
-    case 'mr':
-      return [
-        'या पिकासाठी सर्वोत्तम NPK खत प्रमाण काय आहे?',
-        'मी सेंद्रिय पद्धतीने कीटकांपासून कसे बचू?',
-        'कात्रीसाठी सर्वोत्तम हवामान काय आहे?'
-      ];
-    default:
-      return [
-        'What is the recommended NPK fertilizer dosage for this crop?',
-        'How can I prevent pest attacks organically?',
-        'What weather conditions are best for harvesting?'
-      ];
-  }
-};
+const WELCOME_MESSAGE = "Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.";
 
 export const ChatbotPage: React.FC = () => {
-<<<<<<< HEAD
-  const [language, setLanguage] = useState('en');
-=======
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
 
-  const getInitialWelcome = (lang: string) => {
-    if (lang === 'hi') {
-      return "à¤¨à¤®à¤¸à¥à¤¤à¥‡! ðŸ™ à¤®à¥ˆà¤‚ **à¤•à¥ƒà¤·à¤¿ à¤®à¤¿à¤¤à¥à¤° à¤à¤†à¤ˆ** à¤¹à¥‚à¤, à¤†à¤ªà¤•à¤¾ à¤µà¤°à¤¿à¤·à¥à¤  à¤•à¥ƒà¤·à¤¿ à¤¸à¤²à¤¾à¤¹à¤•à¤¾à¤°à¥¤\n\nà¤†à¤œ à¤†à¤ªà¤•à¥€ à¤«à¤¸à¤² à¤¯à¤¾ à¤–à¥‡à¤¤à¥€ à¤®à¥‡à¤‚ à¤•à¥à¤¯à¤¾ à¤¸à¤¹à¤¾à¤¯à¤¤à¤¾ à¤•à¤° à¤¸à¤•à¤¤à¤¾ à¤¹à¥‚à¤? à¤†à¤ª à¤–à¤¾à¤¦ (NPK), à¤¬à¥€à¤®à¤¾à¤°à¥€ à¤¨à¤¿à¤µà¤¾à¤°à¤£, à¤®à¥Œà¤¸à¤® à¤¯à¤¾ à¤«à¤¸à¤² à¤šà¤¯à¤¨ à¤•à¥‡ à¤¬à¤¾à¤°à¥‡ à¤®à¥‡à¤‚ à¤ªà¥‚à¤› à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤";
-    }
-    if (lang === 'mr') {
-      return "à¤¨à¤®à¤¸à¥à¤•à¤¾à¤°! ðŸ™ à¤®à¥€ **à¤•à¥ƒà¤·à¥€à¤®à¤¿à¤¤à¥à¤° à¤à¤†à¤¯** à¤†à¤¹à¥‡, à¤¤à¥à¤®à¤šà¤¾ à¤¶à¥‡à¤¤à¥€ à¤¸à¤²à¥à¤²à¤¾à¤—à¤¾à¤°à¥¤\n\nà¤†à¤œ à¤®à¥€ à¤¤à¥à¤®à¥à¤¹à¤¾à¤²à¤¾ à¤•à¤¶à¤¾à¤¤ à¤®à¤¦à¤¤ à¤•à¤°à¥‚ à¤¶à¤•à¤¤à¥‹? à¤¤à¥à¤®à¥à¤¹à¥€ à¤–à¤¤à¥‡, à¤ªà¤¿à¤•à¤¾à¤‚à¤µà¤°à¥€à¤² à¤°à¥‹à¤—, à¤¹à¤µà¤¾à¤®à¤¾à¤¨ à¤•à¤¿à¤‚à¤µà¤¾ à¤¯à¥‹à¤—à¥à¤¯ à¤ªà¤¿à¤•à¤¾à¤šà¥€ à¤¨à¤¿à¤µà¤¡ à¤¯à¤¾à¤¬à¤¦à¥à¤¦à¤² à¤µà¤¿à¤šà¤¾à¤°à¥‚ à¤¶à¤•à¤¤à¤¾.";
-    }
-    return "Namaste! ðŸ™ I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.";
-  };
-
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
   const [messages, setMessages] = useState<ChatMessageType[]>([
     {
       id: 'init_1',
       sender: 'assistant',
-<<<<<<< HEAD
-      content: getWelcomeMessage('en'),
-=======
-      content: getInitialWelcome(language),
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
+      content: WELCOME_MESSAGE,
       category: 'General',
       timestamp: new Date().toISOString()
     }
@@ -117,43 +52,6 @@ export const ChatbotPage: React.FC = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
-
-<<<<<<< HEAD
-  useEffect(() => {
-    setMessages((prev) => {
-      if (prev.length === 0) {
-        return [{
-          id: 'init_1',
-          sender: 'assistant',
-          content: getWelcomeMessage(language),
-          category: 'General',
-          timestamp: new Date().toISOString()
-        }];
-      }
-
-      return prev.map((msg, index) => {
-        if (index === 0 && msg.id === 'init_1') {
-          return { ...msg, content: getWelcomeMessage(language) };
-        }
-        return msg;
-      });
-    });
-=======
-  // Update welcome message if user changes language and hasn't started chatting
-  useEffect(() => {
-    if (messages.length === 1 && messages[0].id === 'init_1') {
-      setMessages([
-        {
-          id: 'init_1',
-          sender: 'assistant',
-          content: getInitialWelcome(language),
-          category: 'General',
-          timestamp: new Date().toISOString()
-        }
-      ]);
-    }
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
-  }, [language]);
 
   const handleSend = async (overridePrompt?: string) => {
     const textToSend = (overridePrompt || input).trim();
@@ -176,11 +74,7 @@ export const ChatbotPage: React.FC = () => {
         message: textToSend,
         category,
         use_rag: useRag,
-<<<<<<< HEAD
-        language
-=======
-        language: language
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
+        language: 'en'
       });
 
       const rawMessage = res?.data?.message;
@@ -196,42 +90,11 @@ export const ChatbotPage: React.FC = () => {
 
       setMessages((prev) => [...prev, asstMsg]);
     } catch (err) {
-<<<<<<< HEAD
       console.error('Chat error', err);
-      setMessages((prev) => [...prev, {
-        id: `asst_err_${Date.now()}`,
-        sender: 'assistant',
-        content: language === 'mr'
-          ? `तुमच्या प्रश्नाचे उत्तर मिळाले नाही: **${textToSend}**. Backend/Gemini connection तपासा आणि पुन्हा प्रयत्न करा.`
-          : language === 'hi'
-            ? `आपके प्रश्न का उत्तर नहीं मिल सका: **${textToSend}**। Backend/Gemini connection जाँचकर फिर प्रयास करें।`
-            : `I could not answer your question: **${textToSend}**. Please check the backend/Gemini connection and try again.`,
-        category,
-        timestamp: new Date().toISOString()
-      }]);
-      return;
       const fallbackMsg: ChatMessageType = {
         id: `asst_err_${Date.now()}`,
         sender: 'assistant',
-        content: language === 'hi'
-          ? '### 🌿 कृषि सलाह\n\nफसल की उपज के लिए मिट्टी की जांच के आधार पर संतुलित NPK अनुप्रयोग करें।\n\n- बेसल ड्रेसिंग में 50% नाइट्रोजन दें\n- बाकी 50% दो बार में सप्लीमेंट करें\n- कीटों से बचाव के लिए जैविक उपाय अपनाएँ'
-          : language === 'mr'
-            ? '### 🌿 शेती सल्ला\n\nपिकाची उपज चांगली मिळण्यासाठी मातीच्या चाचणीनुसार संतुलित NPK लागू करा.\n\n- बेसल ड्रेसिंगमध्ये 50% नत्र द्या\n- उर्वरित 50% दोन भागात द्या\n- कीटकांपासून बचावासाठी सेंद्रिय उपाय वापरा'
-            : '### 🌿 Agronomy Advisory Response\n\nFor optimal crop yield, ensure balanced NPK fertilizer application based on your soil health card. Apply 50% Nitrogen during basal dressing and the remainder in 2 split top dressings after irrigation.',
-=======
-      console.error("Chat error", err);
-      let fallbackText = "### Unable to get an answer\n\nThe chatbot service could not be reached. No farming advice was generated, so please try again shortly.";
-      if (language === 'hi') {
-        fallbackText = "### Answer unavailable\n\nThe chatbot service could not be reached. Please try again shortly.";
-      } else if (language === 'mr') {
-        fallbackText = "### Answer unavailable\n\nThe chatbot service could not be reached. Please try again shortly.";
-      }
-
-      const fallbackMsg: ChatMessageType = {
-        id: `asst_err_${Date.now()}`,
-        sender: 'assistant',
-        content: fallbackText,
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
+        content: `I could not answer your question: **${textToSend}**. Please check the backend connection and try again.`,
         category,
         timestamp: new Date().toISOString()
       };
@@ -245,13 +108,7 @@ export const ChatbotPage: React.FC = () => {
     setIsRecording(!isRecording);
     if (!isRecording) {
       setTimeout(() => {
-        if (language === 'hi') {
-          setInput("à¤Ÿà¤®à¤¾à¤Ÿà¤° à¤•à¥‡ à¤ªà¤¤à¥à¤¤à¥‹à¤‚ à¤®à¥‡à¤‚ à¤ªà¥€à¤²à¥‡ à¤§à¤¬à¥à¤¬à¥‹à¤‚ à¤•à¤¾ à¤œà¥ˆà¤µà¤¿à¤• à¤‰à¤ªà¤šà¤¾à¤° à¤•à¥à¤¯à¤¾ à¤¹à¥ˆ?");
-        } else if (language === 'mr') {
-          setInput("à¤Ÿà¥‹à¤®à¥…à¤Ÿà¥‹à¤šà¥à¤¯à¤¾ à¤ªà¤¾à¤¨à¤¾à¤‚à¤µà¤°à¥€à¤² à¤ªà¤¿à¤µà¤³à¥à¤¯à¤¾ à¤ à¤¿à¤ªà¤•à¥à¤¯à¤¾à¤‚à¤µà¤° à¤¸à¥‡à¤‚à¤¦à¥à¤°à¤¿à¤¯ à¤‰à¤ªà¤¾à¤¯ à¤•à¤¾à¤¯ à¤†à¤¹à¥‡?");
-        } else {
-          setInput("What is the simple treatment for leaf spots on tomatoes?");
-        }
+        setInput("What is the simple treatment for leaf spots on tomatoes?");
         setIsRecording(false);
       }, 3000);
     }
@@ -277,7 +134,7 @@ export const ChatbotPage: React.FC = () => {
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               {t('chatbot_title')}
               <span className="text-xs px-2 py-0.5 bg-agri-500/20 text-agri-300 rounded-full border border-agri-500/30 font-medium">
-                Simple Multi-Language AI
+                AI Assistant
               </span>
             </h2>
             <p className="text-xs text-slate-400">{t('chatbot_subtitle')}</p>
@@ -286,18 +143,6 @@ export const ChatbotPage: React.FC = () => {
 
         {/* Category & RAG Toggle */}
         <div className="flex items-center space-x-3">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-darkbg-900/60 border border-white/10 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none"
-          >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.value} value={lang.value}>
-                {lang.value === 'mr' ? 'मराठी' : lang.value === 'hi' ? 'हिंदी' : 'English'}
-              </option>
-            ))}
-          </select>
-
           <button
             onClick={() => setUseRag(!useRag)}
             className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
@@ -307,23 +152,18 @@ export const ChatbotPage: React.FC = () => {
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>{language === 'hi' ? 'RAG दस्तावेज मोड:' : language === 'mr' ? 'RAG दस्तऐवज मोड:' : 'RAG Document Mode:'} {useRag ? 'ON' : 'OFF'}</span>
+            <span>RAG Document Mode: {useRag ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
-<<<<<<< HEAD
-            onClick={() => setMessages([messages[0] || {
+            onClick={() => setMessages([{
               id: 'init_1',
               sender: 'assistant',
-              content: 'Namaste! 🙏 I am **KrishiMitra AI**, your Senior Agronomist and Multimodal Agriculture Advisor.\n\nHow can I assist you with your farm today? You can ask about NPK fertilizer calculations, leaf diseases, crop selection, organic farming, or turn on **RAG Mode** to query your uploaded farming manuals.',
+              content: WELCOME_MESSAGE,
               category: 'General',
               timestamp: new Date().toISOString()
             }])}
-            title="Clear Chat History"
-=======
-            onClick={() => setMessages([messages[0]])}
             title={t('clear_chat')}
->>>>>>> f49f41f6512d5af5258752a507f1c67730fdddb2
             className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-white/5"
           >
             <Trash2 className="w-4 h-4" />
@@ -350,11 +190,11 @@ export const ChatbotPage: React.FC = () => {
 
       {/* Quick Action Sample Question Pills */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-        <span className="text-[11px] font-bold text-agri-400 whitespace-nowrap px-1">âš¡ {t('suggested_questions')}</span>
+        <span className="text-[11px] font-bold text-agri-400 whitespace-nowrap px-1">⚡ {t('suggested_questions')}</span>
         {[
-          language === 'hi' ? "à¤—à¥‡à¤¹à¥‚à¤‚ à¤®à¥‡à¤‚ à¤–à¤¾à¤¦ (NPK) à¤•à¥€ à¤¸à¤¹à¥€ à¤®à¤¾à¤¤à¥à¤°à¤¾" : language === 'mr' ? "à¤—à¤µà¥à¤¹à¤¾à¤¸à¤¾à¤ à¥€ à¤–à¤¤à¤¾à¤‚à¤šà¥‡ à¤ªà¥à¤°à¤®à¤¾à¤£" : "Wheat NPK Dose per Acre",
-          language === 'hi' ? "à¤Ÿà¤®à¤¾à¤Ÿà¤° à¤•à¥‡ à¤ªà¤¤à¥à¤¤à¥‹à¤‚ à¤®à¥‡à¤‚ à¤ªà¥€à¤²à¥‡ à¤§à¤¬à¥à¤¬à¥‹à¤‚ à¤•à¤¾ à¤‡à¤²à¤¾à¤œ" : language === 'mr' ? "à¤Ÿà¥‹à¤®à¥…à¤Ÿà¥‹ à¤ªà¤¿à¤•à¤¾à¤¤à¥€à¤² à¤°à¥‹à¤— à¤‰à¤ªà¤¾à¤¯" : "Tomato Leaf Yellow Spot Cure",
-          language === 'hi' ? "à¤œà¥ˆà¤µà¤¿à¤• à¤•à¥€à¤Ÿà¤¨à¤¾à¤¶à¤• (à¤¨à¥€à¤® à¤¤à¥‡à¤²) à¤‰à¤ªà¤¯à¥‹à¤—" : language === 'mr' ? "à¤¸à¥‡à¤‚à¤¦à¥à¤°à¤¿à¤¯ à¤•à¥€à¤Ÿà¤•à¤¨à¤¾à¤¶à¤• à¤¸à¤²à¥à¤²à¤¾" : "Organic Neem Oil Pest Spray",
+          "Wheat NPK Dose per Acre",
+          "Tomato Leaf Yellow Spot Cure",
+          "Organic Neem Oil Pest Spray",
         ].map((q, idx) => (
           <button
             key={idx}
@@ -394,7 +234,7 @@ export const ChatbotPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-semibold text-agri-300 uppercase tracking-wider">
-                  {msg.sender === 'user' ? 'You' : 'KrishiMitra AI'} â€¢ {msg.category || 'General'}
+                  {msg.sender === 'user' ? 'You' : 'KrishiMitra AI'} • {msg.category || 'General'}
                 </span>
                 {msg.sender === 'assistant' && (
                   <button
@@ -431,13 +271,7 @@ export const ChatbotPage: React.FC = () => {
         {loading && (
           <div className="flex items-center space-x-3 text-agri-400 text-sm font-medium animate-pulse">
             <RefreshCw className="w-5 h-5 animate-spin" />
-            <span>
-              {language === 'hi'
-                ? 'à¤•à¥ƒà¤·à¤¿ à¤‰à¤¤à¥à¤¤à¤° à¤¤à¥ˆà¤¯à¤¾à¤° à¤•à¤¿à¤¯à¤¾ à¤œà¤¾ à¤°à¤¹à¤¾ à¤¹à¥ˆ...'
-                : language === 'mr'
-                ? 'à¤¶à¥‡à¤¤à¥€à¤µà¤¿à¤·à¤¯à¤• à¤‰à¤¤à¥à¤¤à¤° à¤¤à¤¯à¤¾à¤° à¤•à¥‡à¤²à¥‡ à¤œà¤¾à¤¤ à¤†à¤¹à¥‡...'
-                : 'Preparing simple farming advice...'}
-            </span>
+            <span>Preparing simple farming advice...</span>
           </div>
         )}
 
@@ -479,5 +313,3 @@ export const ChatbotPage: React.FC = () => {
     </div>
   );
 };
-
-

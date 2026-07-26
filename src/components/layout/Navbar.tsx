@@ -37,8 +37,6 @@ export const Navbar: React.FC = () => {
 
       {/* Right Controls */}
       <div className="flex items-center space-x-3">
-        {/* Language Switcher */}
-        <LanguageSelector />
 
         <div className="hidden sm:flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-xl border border-white/5">
           <CloudSun className="w-4 h-4 text-amber-400" />
