@@ -3,39 +3,107 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';
 import { api } from '../services/api';
 import { WeatherData } from '../types';
-import { CloudSun, Sun, CloudRain, Wind, Droplets, Thermometer, Sparkles, MapPin } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { CloudSun, Sun, CloudRain, Wind, Droplets, Thermometer, Sparkles, MapPin, RefreshCw } from 'lucide-react';
+
+// All Maharashtra districts
+const MAHARASHTRA_DISTRICTS = [
+  'Ahmednagar', 'Akola', 'Amravati', 'Aurangabad', 'Beed', 'Bhandara',
+  'Buldhana', 'Chandrapur', 'Dhule', 'Gadchiroli', 'Gondia', 'Hingoli',
+  'Jalgaon', 'Jalna', 'Kolhapur', 'Latur', 'Mumbai City', 'Mumbai Suburban',
+  'Nagpur', 'Nanded', 'Nandurbar', 'Nashik', 'Osmanabad', 'Palghar',
+  'Parbhani', 'Pune', 'Raigad', 'Ratnagiri', 'Sangli', 'Satara',
+  'Sindhudurg', 'Solapur', 'Thane', 'Wardha', 'Washim', 'Yavatmal'
+];
 
 export const WeatherPage: React.FC = () => {
+  const { user } = useAuth();
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Initialise to the user's registered district, or empty to force selection
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(
+    user?.district || ''
+  );
+  const [selectedState, setSelectedState] = useState<string>(
+    user?.state || 'Maharashtra'
+  );
+
+  const fetchWeather = async (district: string, state: string) => {
+    if (!district) return;
+    setLoading(true);
+    try {
+      const res = await api.get('/weather', {
+        params: { district, state }
+      });
+      setWeather(res.data);
+    } catch (err) {
+      console.error('Weather load error', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch on mount once user is loaded
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const res = await api.get('/weather');
-        setWeather(res.data);
-      } catch (err) {
-        console.error("Weather load error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWeather();
-  }, []);
+    const district = user?.district || 'Pune';
+    const state = user?.state || 'Maharashtra';
+    setSelectedDistrict(district);
+    setSelectedState(state);
+    fetchWeather(district, state);
+  }, [user]);
+
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const district = e.target.value;
+    setSelectedDistrict(district);
+    fetchWeather(district, selectedState);
+  };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white flex items-center gap-3">
-          <CloudSun className="w-8 h-8 text-amber-400" />
-          Agricultural Weather & Spray Advisor
-        </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          7-day extended forecasts with automated spray, fertilizer, and irrigation window recommendations.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white flex items-center gap-3">
+            <CloudSun className="w-8 h-8 text-amber-400" />
+            Agricultural Weather & Spray Advisor
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            7-day extended forecasts with automated spray, fertilizer, and irrigation window recommendations.
+          </p>
+        </div>
+
+        {/* District Selector */}
+        <div className="flex items-center gap-2 shrink-0">
+          <MapPin className="w-4 h-4 text-agri-400" />
+          <select
+            value={selectedDistrict}
+            onChange={handleDistrictChange}
+            className="bg-darkbg-800 border border-white/10 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-agri-500 cursor-pointer"
+          >
+            <option value="" disabled>Select District</option>
+            {MAHARASHTRA_DISTRICTS.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => fetchWeather(selectedDistrict, selectedState)}
+            disabled={loading || !selectedDistrict}
+            className="p-2 rounded-xl bg-agri-600 hover:bg-agri-500 disabled:opacity-50 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 text-white ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
-      {weather && (
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <RefreshCw className="w-8 h-8 text-agri-400 animate-spin" />
+          <span className="ml-3 text-slate-400">Loading weather for {selectedDistrict}...</span>
+        </div>
+      )}
+
+      {!loading && weather && (
         <>
           {/* Current Weather Card */}
           <GlassCard className="grid grid-cols-1 md:grid-cols-4 gap-6 p-8">
@@ -124,6 +192,13 @@ export const WeatherPage: React.FC = () => {
             ))}
           </div>
         </>
+      )}
+
+      {!loading && !weather && (
+        <GlassCard className="text-center py-16">
+          <MapPin className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+          <p className="text-slate-400">Select a district above to load weather data.</p>
+        </GlassCard>
       )}
     </div>
   );

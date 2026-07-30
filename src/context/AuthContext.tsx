@@ -30,13 +30,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         // Demo User fallback for immediate Hackathon testing
+        // district is intentionally left empty so WeatherPage uses the dropdown
         setUser({
           id: 'demo_user',
           email: 'farmer@krishimitra.ai',
           full_name: 'Rajesh Farmer',
           role: 'farmer',
           state: 'Maharashtra',
-          district: 'Pune',
+          district: '',
           soil_type: 'Black',
           farm_size_acres: 3.5,
           preferred_language: 'en',

@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'https://backend-ai-uw4d.onrender.com/api/v1';
+// In development this is http://localhost:8000/api/v1 (set in .env)
+// In production set VITE_API_BASE_URL to your deployed backend URL
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
