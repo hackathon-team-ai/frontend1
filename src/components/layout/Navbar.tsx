@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { LanguageSelector } from '../ui/LanguageSelector';
-import { Sprout, Bell, LogOut, Search, CloudSun } from 'lucide-react';
+import { Sprout, Bell, LogOut, Search, CloudSun, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onMenuClick?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -21,7 +25,16 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-darkbg-800/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-16 bg-darkbg-800/80 backdrop-blur-md border-b border-white/10 px-4 md:px-6 flex items-center justify-between">
+      {/* Hamburger — mobile only */}
+      <button
+        onClick={onMenuClick}
+        className="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors mr-2 flex-shrink-0"
+        aria-label="Open menu"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
       {/* Brand */}
       <div className="flex items-center space-x-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-agri-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-agri-500/20">
