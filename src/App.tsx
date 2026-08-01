@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AppLayout } from './components/layout/AppLayout';
 
+// Pages
 import { DashboardPage } from './pages/DashboardPage';
 import { ChatbotPage } from './pages/ChatbotPage';
 import { DiseaseDetectionPage } from './pages/DiseaseDetectionPage';
