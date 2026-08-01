@@ -1,3 +1,4 @@
+// CropAdvisorPage — AI-powered crop recommendation based on soil, season, and location
 import React, { useState, useEffect } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';

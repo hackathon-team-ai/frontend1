@@ -1,3 +1,5 @@
+// DiseaseDetectionPage — upload a plant leaf photo and get AI-powered disease analysis
+// Powered by Google Gemini Vision via KrishiMitra backend
 import React, { useState } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';

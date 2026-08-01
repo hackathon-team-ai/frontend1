@@ -1,3 +1,5 @@
+// ChatbotPage — multilingual AI farming assistant
+// Supports voice input, RAG knowledge base, and 10 Indian languages
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { api } from '../services/api';

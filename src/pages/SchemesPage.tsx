@@ -1,3 +1,4 @@
+// SchemesPage — browse and search Indian government agricultural schemes
 import React, { useState, useEffect } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';

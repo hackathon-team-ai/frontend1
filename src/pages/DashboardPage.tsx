@@ -1,3 +1,5 @@
+// DashboardPage — main landing page after login
+// Shows farm overview, weather, and quick links to all features
 import React, { useEffect, useState } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';

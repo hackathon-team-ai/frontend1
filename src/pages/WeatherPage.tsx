@@ -1,3 +1,5 @@
+// WeatherPage — real-time weather forecast for farmer's district
+// Uses OpenWeatherMap API via KrishiMitra backend
 import React, { useEffect, useState } from 'react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Badge } from '../components/ui/Badge';
